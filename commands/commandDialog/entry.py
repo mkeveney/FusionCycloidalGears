@@ -393,6 +393,10 @@ def start():
     # Specify if the command is promoted to the main toolbar.
     control.isPromoted = IS_PROMOTED
 
+    ui.messageBox("Cycloidal gear command added to 'Create' menu.\n\n"
+        "Note that This Add-in is designed to work with 'Hybrid Design' documents\n"
+        "The menu item may not appear for other design types!")
+
 # Executed when add-in is stopped.
 #
 def stop():
@@ -416,6 +420,14 @@ def stop():
 #
 def command_created(args: adsk.core.CommandCreatedEventArgs):
     # futil.log(f'{CMD_NAME} Command Created Event')
+
+    # Fail if document is not a hybrid-design type
+    #
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    if (design.designIntent != adsk.fusion.DesignIntentTypes.HybridDesignIntentType):
+        ui.messageBox("This Add-in requires the document to be a 'Hybrid Design'\n"
+                      "Convert the design type and retry.");
+        return
 
     # https://help.autodesk.com/view/fusion360/ENU/?contextId=CommandInputs
     inputs = args.command.commandInputs
